@@ -1,0 +1,10 @@
+{
+  "name": "yt_comment_grabber",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "async": "^2.1.4",
+    "fs-extra": "^1.0.0",
+    "googleapis": "^14.2.0"
+  }
+}
