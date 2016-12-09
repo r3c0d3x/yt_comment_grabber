@@ -16,7 +16,7 @@ function writePage(id, page, data) {
 
 function get(func, opts, cb) {
     async.retry({
-        times: 5,
+        times: 10,
         interval: 1000
     }, (retryCb) => {
         setTimeout(() => {
@@ -181,6 +181,8 @@ function getVideoComments(videoId, cb) {
             } else {
                 if (apiErr.errors[0].reason === 'commentsDisabled') {
                     runCb(null, false);
+                } else if (apiErr.errors[0].reason === 'processingFailure') {
+                    runCb('retry', null);
                 } else {
                     runCb(apiErr, null);
                 }
@@ -189,13 +191,17 @@ function getVideoComments(videoId, cb) {
     }, (runErr) => {
         if (runErr === null) {
             cb(null, comments);
+        } else if (runErr === 'retry') {
+            setTimeout(() => {
+                getVideoComments(videoId, cb);
+            }, 10000);
         } else {
             cb(runErr, null);
         }
     });
 }
 
-async.eachSeries(require('./pewdiepie.json'), (item, eachCb) => {
+async.eachSeries(require('./pewdiepie_.json'), (item, eachCb) => {
     getVideoComments(item, (commentsErr, commentsData) => {
         if (commentsErr === null) {
             let comments = commentsData;
